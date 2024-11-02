@@ -1,0 +1,29 @@
+<!-- passenger_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Passenger Form</title>
+</head>
+
+<body>
+    <h1>Passenger Form</h1>
+    <p>Details for taxi with license plate: {{ taxi.license_plate }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Add passenger-related fields here -->
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone" required><br>
+
+        <label for="remarks">Remarks:</label>
+        <textarea id="remarks" name="remarks"></textarea><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+
+</html>

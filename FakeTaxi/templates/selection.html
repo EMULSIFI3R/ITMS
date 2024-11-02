@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">QR Code Generator</h1>
+        <form id="qrCodeForm">
+            <div class="mb-3">
+                <label for="roleSelect" class="form-label">Select Role:</label>
+                <select id="roleSelect" class="form-select">
+                    <option value="" disabled selected>Select a role</option>
+                    <option value="passenger">Passenger</option>
+                    <option value="officer">Officer</option>
+                </select>
+            </div>
+
+            <div id="vehicleDetails" class="mb-3"></div>
+
+            <div id="passengerSection" class="hidden">
+                <h4>Passenger Information</h4>
+                <input type="text" id="passengerName" class="form-control" placeholder="Name" required>
+                <input type="text" id="passengerCell" class="form-control" placeholder="Cellphone" required>
+                <textarea id="passengerRemarks" class="form-control" placeholder="Remarks"></textarea>
+                <input type="email" id="passengerEmail" class="form-control" placeholder="Email (optional)">
+            </div>
+
+            <div id="officerSection" class="hidden">
+                <h4>Officer Information</h4>
+                <input type="text" id="officerID" class="form-control" placeholder="Officer ID" required>
+                <input type="text" id="officerName" class="form-control" placeholder="Name" required>
+                <input type="text" id="outpostLocation" class="form-control" placeholder="Outpost Location" required>
+                <textarea id="violationInfo" class="form-control" placeholder="Violation Information"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            const role = this.value;
+            const vehicleDetailsDiv = document.getElementById('vehicleDetails');
+            const passengerSection = document.getElementById('passengerSection');
+            const officerSection = document.getElementById('officerSection');
+
+            passengerSection.classList.add('hidden');
+            officerSection.classList.add('hidden');
+
+            // Fetch vehicle info if role is selected
+            const licensePlate = '10221124'; // This would be dynamically set from the QR code
+
+            fetch(`/api/vehicle_info/?license_plate=${licensePlate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        vehicleDetailsDiv.textContent = data.error;
+                    } else {
+                        vehicleDetailsDiv.textContent = `Make: ${data.make}, Model: ${data.model}, Year: ${data.year}, License Plate: ${data.license_plate}`;
+                    }
+
+                    // Show relevant form based on role
+                    if (role === 'passenger') {
+                        passengerSection.classList.remove('hidden');
+                    } else if (role === 'officer') {
+                        officerSection.classList.remove('hidden');
+                    }
+                }).catch(error => {
+                    vehicleDetailsDiv.textContent = 'Error fetching vehicle data';
+                    console.error('Error:', error);
+                });
+        });
+
+        document.getElementById('qrCodeForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent form submission
+            const role = document.getElementById('roleSelect').value;
+            let payload = {
+                role: role
+            };
+
+            if (role === 'passenger') {
+                payload.name = document.getElementById('passengerName').value;
+                payload.cellphone = document.getElementById('passengerCell').value;
+                payload.remarks = document.getElementById('passengerRemarks').value;
+                payload.email = document.getElementById('passengerEmail').value;
+            } else if (role === 'officer') {
+                payload.id = document.getElementById('officerID').value;
+                payload.name = document.getElementById('officerName').value;
+                payload.outpost = document.getElementById('outpostLocation').value;
+                payload.violation = document.getElementById('violationInfo').value;
+            }
+
+            try {
+                const response = await fetch('/api/submit_info/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Data submitted successfully!');
+                } else {
+                    alert('Failed to submit data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the data.');
+            }
+        });
+    </script>

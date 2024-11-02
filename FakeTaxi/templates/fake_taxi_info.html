@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Taxi Information</title>
+</head>
+
+<body>
+    <h1>Fake Taxi Details</h1>
+    <p>License Plate: {{ taxi.license_plate }}</p>
+    <p>Color: {{ taxi.color }}</p>
+    <p>Capacity: {{ taxi.capacity }}</p>
+    <p>Available: {{ taxi.available }}</p>
+
+    <h2>Select Your Role</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>
+            <input type="radio" name="user_type" value="passenger" required> Passenger
+        </label><br>
+        <label>
+            <input type="radio" name="user_type" value="officer"> Officer
+        </label><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+
+</html>

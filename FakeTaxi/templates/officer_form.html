@@ -1,0 +1,35 @@
+<!-- officer_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Officer Form</title>
+</head>
+
+<body>
+    <h1>Officer Form</h1>
+    <p>Details for taxi with license plate: {{ taxi.license_plate }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Add officer-related fields here -->
+        <label for="officer_id">Officer ID:</label>
+        <input type="text" id="officer_id" name="officer_id" required><br>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="contact">Contact:</label>
+        <input type="text" id="contact" name="contact" required><br>
+
+        <label for="office">Office:</label>
+        <input type="text" id="office" name="office" required><br>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+
+</html>

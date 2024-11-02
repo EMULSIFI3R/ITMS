@@ -1,0 +1,65 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Access Form</title>
+</head>
+
+<body>
+    <h1>Welcome!</h1>
+    <p id="vehicle-info"></p>
+
+    <form id="selection-form">
+        <label>
+            <input type="radio" name="user_type" value="passenger" required> Passenger
+        </label>
+        <label>
+            <input type="radio" name="user_type" value="officer" required> Officer
+        </label>
+        <button type="submit">Continue</button>
+    </form>
+
+    <form id="passenger-form" style="display: none;" method="POST">
+        <input type="text" name="name" placeholder="Your Name" required><br>
+        <input type="text" name="phone" placeholder="Phone Number" required><br>
+        <textarea name="remarks" placeholder="Remarks"></textarea><br>
+        <input type="email" name="email" placeholder="Email (Optional)"><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <form id="officer-form" style="display: none;" method="POST">
+        <input type="text" name="officer_id" placeholder="ID" required><br>
+        <input type="text" name="name" placeholder="Name" required><br>
+        <input type="text" name="contact" placeholder="Contact Number" required><br>
+        <input type="text" name="office" placeholder="Assigned Office" required><br>
+        <input type="text" name="location" placeholder="Post Location" required><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        // Extract license plate from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const licensePlate = urlParams.get('license_plate');
+
+        // Show vehicle information
+        if (licensePlate) {
+            document.getElementById('vehicle-info').textContent =
+                `You are accessing details for vehicle: ${licensePlate}`;
+        }
+
+        // Toggle forms based on user type
+        document.getElementById('selection-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userType = document.querySelector('input[name="user_type"]:checked').value;
+            document.getElementById('passenger-form').style.display =
+                userType === 'passenger' ? 'block' : 'none';
+            document.getElementById('officer-form').style.display =
+                userType === 'officer' ? 'block' : 'none';
+        });
+    </script>
+</body>
+
+</html>
