@@ -6,12 +6,14 @@ from .serializers import FakeTaxiSerializer
 import qrcode
 import io
 from django.core.files.base import ContentFile
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import FakeTaxiForm
 from django.contrib import messages
 from rest_framework.views import APIView
+from .models import Driver
+import logging
 
-
+logger = logging.getLogger(__name__)
 
 class FakeTaxiListCreateView(generics.ListCreateAPIView):
     queryset = FakeTaxi.objects.all()
@@ -48,7 +50,6 @@ def add_fake_taxi(request):
     
     return render(request, 'add_fake_taxi.html', {'form': form})
 
-
 class GenerateQRCodeView(APIView):
     def get(self, request, id):  # Changed from license_plate to id
         try:
@@ -70,7 +71,6 @@ class GenerateQRCodeView(APIView):
         buf.seek(0)
 
         return HttpResponse(buf.getvalue(), content_type='image/png')
-    
 
 def add_fake_taxi(request):
     if request.method == 'POST':
@@ -93,3 +93,21 @@ def add_fake_taxi(request):
         return redirect('vehicle_form')
 
     return render(request, 'form.html')
+
+def get_driver_info(request, nfc_code):
+    logger.debug(f"Fetching driver info for NFC code: {nfc_code}")
+    try:
+        driver = Driver.objects.get(nfc_code=nfc_code)
+        data = {
+            'name': driver.name,
+            'license_number': driver.license_number,
+            'nfc_code': driver.nfc_code,
+        }
+        logger.debug(f"Driver found: {data}")
+        return JsonResponse(data)
+    except Driver.DoesNotExist:
+        logger.debug(f"Driver with NFC code {nfc_code} not found")
+        return JsonResponse({'error': 'Driver not found'}, status=404)
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        return JsonResponse({'error': 'An error occurred'}, status=500)

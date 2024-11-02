@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Info</title>
+    <script>
+        async function fetchDriverInfo(nfcCode) {
+            try {
+                const response = await fetch(`/driver-info/${nfcCode}/`);
+                if (!response.ok) {
+                    throw new Error('Driver not found');
+                }
+                const data = await response.json();
+                document.getElementById('driver-name').innerText = data.name;
+                document.getElementById('driver-license').innerText = data.license_number;
+                document.getElementById('driver-nfc').innerText = data.nfc_code;
+            } catch (error) {
+                console.error('Error fetching driver info:', error);
+                alert('Driver not found');
+            }
+        }
+
+        function onNfcScan(event) {
+            const nfcCode = event.target.value;
+            if (nfcCode.length === 10) {
+                fetchDriverInfo(nfcCode);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Driver Information</h1>
+    <input type="text" id="nfc-input" placeholder="Scan NFC ID" oninput="onNfcScan(event)">
+    <div>
+        <p>Name: <span id="driver-name"></span></p>
+        <p>License Number: <span id="driver-license"></span></p>
+        <p>NFC Code: <span id="driver-nfc"></span></p>
+    </div>
+</body>
+
+</html>

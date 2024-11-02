@@ -10,14 +10,13 @@ class Vehicle(models.Model):
     def __str__(self):
         return f"{self.year} {self.make} {self.model_name}"
 
-
 class Driver(models.Model):
     name = models.CharField(max_length=100)
     license_number = models.CharField(max_length=50)
+    nfc_code = models.CharField(max_length=255, blank=True, null=True, unique=True)  # Add unique constraint
 
     def __str__(self):
         return self.name
-
 
 class FakeTaxi(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)  # Direct reference without string
@@ -34,4 +33,4 @@ class FakeTaxi(models.Model):
             if os.path.isfile(self.qr_code.path):
                 os.remove(self.qr_code.path)  # Delete the file from filesystem
             self.qr_code = None
-            self.save() 
+            self.save()

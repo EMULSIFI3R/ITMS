@@ -5,7 +5,6 @@ from django.core.files.base import ContentFile
 import io
 from django.urls import reverse
 
-
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
     list_display = ('id', 'make', 'model_name', 'year')  # Adjust fields as necessary
@@ -13,8 +12,8 @@ class VehicleAdmin(admin.ModelAdmin):
 
 @admin.register(Driver)
 class DriverAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'license_number')  # Adjust fields as necessary
-    search_fields = ('name', 'license_number')
+    list_display = ('id', 'name', 'license_number', 'nfc_code')  # Add nfc_code to display
+    search_fields = ('name', 'license_number', 'nfc_code')  # Add nfc_code to search fields
 
 @admin.register(FakeTaxi)
 class FakeTaxiAdmin(admin.ModelAdmin):
